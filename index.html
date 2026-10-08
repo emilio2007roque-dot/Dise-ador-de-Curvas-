@@ -1,0 +1,96 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#101d2b">
+  <meta name="description" content="Calculadora PWA para el diseño preliminar de curvas horizontales circulares con trazo y memoria de cálculo.">
+  <link rel="manifest" href="manifest.webmanifest">
+  <link rel="icon" href="icon.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="styles.css">
+  <link rel="stylesheet" href="extra.css">
+  <title>Curva · Diseño geométrico</title>
+</head>
+<body>
+  <header class="topbar">
+    <a class="brand" href="#inicio" aria-label="Curva, inicio"><span class="brand-mark">C</span><span>curva<span class="brand-dot">.</span><small>DISEÑO GEOMÉTRICO</small></span></a>
+    <div class="top-actions"><span class="offline"><i></i> PWA · disponible sin conexión</span><button class="icon-btn" id="installBtn" hidden>＋ Instalar</button><button class="icon-btn" id="resetBtn" title="Restaurar valores iniciales">↺</button></div>
+  </header>
+  <main id="inicio">
+    <section class="hero">
+      <div><p class="eyebrow">HERRAMIENTA DE TRAZO · SCT</p><h1>Diseñador de curva<br><em>horizontal circular</em></h1><p class="hero-copy">Define los datos de proyecto, revisa el trazo en planta y genera una memoria lista para entregar.</p></div>
+      <div class="hero-badge"><span class="badge-icon">⌁</span><span><b>Curva simple</b><small>Geometría dinámica</small></span></div>
+    </section>
+    <nav class="tabs" aria-label="Secciones"><button class="tab active" data-tab="diseno">01 <span>Diseño</span></button><button class="tab" data-tab="puntos">02 <span>Subdivisiones</span></button><button class="tab" data-tab="resultados">03 <span>Resultados SCT</span></button><button class="tab" data-tab="tablas">04 <span>Tablas de datos</span></button><button class="tab" data-tab="memoria">05 <span>Memoria</span></button></nav>
+    <section class="panel active" id="panel-diseno">
+      <div class="workspace">
+        <aside class="sidebar">
+          <div class="section-heading"><div><p class="eyebrow">PARÁMETROS</p><h2>Datos de entrada</h2></div><span class="step">A</span></div>
+          <div class="input-grid">
+            <label class="field wide"><span>Tipo de carretera</span><select id="road"><option>E</option><option selected>D</option><option>C</option><option>B</option><option>A2</option><option>A4</option><option>A4S</option></select></label>
+            <label class="field"><span>Velocidad de proyecto</span><div class="input-unit"><input id="speed" type="number" min="30" max="110" step="10" value="50"><b>km/h</b></div></label>
+            <label class="field"><span>Deflexión Δ</span><div class="input-unit"><input id="delta" type="number" min="0.1" max="179" step="0.1" value="40"><b>°</b></div></label>
+            <label class="field"><span>Sentido</span><select id="side"><option>Izquierda</option><option>Derecha</option></select></label>
+            <label class="field"><span>Dato de curvatura</span><select id="mode"><option value="degree">Grado Gc</option><option value="radius">Radio Rc</option></select></label>
+            <label class="field wide" id="degreeField"><span>Grado de curvatura Gc</span><div class="input-unit"><input id="degree" type="number" min="0.01" step="0.01" value="8"><b>°</b></div></label>
+            <label class="field wide" id="radiusField" hidden><span>Radio Rc</span><div class="input-unit"><input id="radius" type="number" min="1" step="0.01" value="150"><b>m</b></div></label>
+            <label class="field wide"><span>Cadenamiento del PI</span><div class="input-unit"><input id="station" type="number" step="0.01" value="1250"><b>m</b></div><small>Ejemplo: 1+250 = 1250 m</small></label>
+            <label class="field"><span>Coordenada X del PI</span><div class="input-unit"><input id="piX" type="number" step="0.001" value="0"><b>m</b></div></label>
+            <label class="field"><span>Coordenada Y del PI</span><div class="input-unit"><input id="piY" type="number" step="0.001" value="0"><b>m</b></div></label>
+            <label class="field wide"><span>Azimut de tangente de entrada</span><div class="input-unit"><input id="bearing" type="number" min="0" max="360" step="0.01" value="90"><b>°</b></div><small>Desde el Norte, sentido horario (90° = Este)</small></label>
+            <label class="field wide"><span>Tangente disponible en campo</span><div class="input-unit"><input id="available" type="number" min="0" step="0.01" value="350"><b>m</b></div><small>Se verifica ST ≤ tangente disponible</small></label>
+            <label class="field"><span>Ancho de calzada</span><div class="input-unit"><input id="width" type="number" min="3" step="0.1" value="6"><b>m</b></div></label>
+            <label class="field"><span>Partes de curva</span><div class="input-unit"><input id="parts" type="number" min="1" max="200" step="1" value="8"><b>n</b></div></label>
+            <div class="input-divider wide">TRANSICIÓN Y OPERACIÓN</div>
+            <label class="field wide"><span>Tipo de transición</span><select id="transition"><option>Automática</option><option>Mixta</option><option>Espiral</option></select></label>
+            <label class="field"><span>Sobreelevación manual Sc</span><div class="input-unit"><input id="scManual" type="number" min="0" max="12" step="0.1" placeholder="Automática"><b>%</b></div></label>
+            <label class="field"><span>Ampliación manual Ac</span><div class="input-unit"><input id="acManual" type="number" min="0" step="1" placeholder="Automática"><b>cm</b></div></label>
+            <label class="field wide"><span>Longitud mixta manual Le</span><div class="input-unit"><input id="leManual" type="number" min="0" step="0.5" placeholder="Automática"><b>m</b></div><small>Aplica cuando las tablas SCT no estén disponibles para el tipo de carretera.</small></label>
+          </div>
+          <div class="rule-note"><span>ⓘ</span><p>Las tablas SCT del libro azul están integradas para la verificación de Gmáx y Dp. Para carreteras C, B y A se reporta la geometría circular; sobreelevación y transición requieren los datos de sus tablas específicas.</p></div>
+          <div class="source-mini">BASE DE DISEÑO <b>SCT · Normas 1984</b><br>Contrasta los criterios vigentes de tu proyecto.</div>
+        </aside>
+        <div class="results-area">
+          <div class="section-heading result-heading"><div><p class="eyebrow">RESULTADOS EN TIEMPO REAL</p><h2>Curva adoptada</h2></div><span id="statusPill" class="status-pill">● REVISAR</span></div>
+          <div class="metric-grid">
+            <article class="metric primary"><span>Radio de curva</span><strong id="rOut">—</strong><small>Rc · metros</small><span class="metric-icon">R</span></article>
+            <article class="metric"><span>Grado de curvatura</span><strong id="gOut">—</strong><small>Gc · grados</small></article>
+            <article class="metric"><span>Longitud de curva</span><strong id="lOut">—</strong><small>Lc · metros</small></article>
+            <article class="metric"><span>Subtangente</span><strong id="tOut">—</strong><small>ST · metros</small></article>
+          </div>
+          <div class="checks" id="checks"></div>
+          <article class="chart-card">
+            <div class="chart-head"><div><p class="eyebrow">VISTA EN PLANTA</p><h3>Trazo geométrico</h3></div><div class="chart-tools"><span class="legend"><i class="legend-line road-line"></i>Eje</span><span class="legend"><i class="legend-line dim-line"></i>Radios</span><button id="fitBtn" class="fit-btn" title="Ajustar vista">⤢</button></div></div>
+            <div class="svg-wrap"><svg id="planSvg" viewBox="0 0 900 510" role="img" aria-label="Trazo interactivo de la curva en planta"></svg></div>
+            <div class="chart-foot"><span id="chartSummary">PI · PC · PT · centro</span><span id="chartHint">Arrastra para desplazar · rueda para acercar</span></div>
+          </article>
+          <div class="station-row" id="stationCards"></div>
+          <section class="output-sections" id="compactOutputs"></section>
+          <div class="export-row"><button class="button button-secondary" id="dxfBtn"><span>⇩</span> Descargar trazo DXF</button><button class="button button-primary" id="memoryBtn">Ver memoria de cálculo <span>→</span></button></div>
+        </div>
+      </div>
+    </section>
+    <section class="panel" id="panel-puntos">
+      <div class="section-heading"><div><p class="eyebrow">REPLANTEO DE LA CURVA</p><h2>Subdivide el arco</h2><p class="subheading">Cada punto muestra su ángulo central, radio desde O y distancia recorrida desde PC.</p></div><span class="step">B</span></div>
+      <div class="subdivision-layout"><article class="chart-card subdivision-chart"><div class="chart-head"><div><p class="eyebrow">CENTRO Y PUNTOS</p><h3>Geometría de subdivisiones</h3></div><span class="plot-key">O → Pi · Rc <i></i></span></div><div class="svg-wrap"><svg id="pointsSvg" viewBox="0 0 800 540" role="img" aria-label="Subdivisión angular del arco desde el centro"></svg></div><div class="chart-foot"><span>Ángulo medido desde el radio O–PC</span><span>Distancias en metros</span></div></article>
+        <article class="table-card"><div class="table-head"><div><p class="eyebrow">TABLA DE PUNTOS</p><h3 id="pointCount">9 estaciones</h3></div><button id="csvBtn" class="text-button">Exportar CSV ↓</button></div><div class="table-scroll"><table><thead><tr><th>Punto</th><th>Ángulo<br>central</th><th>O–Pi<br>radio</th><th>PC–Pi<br>arco</th><th>PC–Pi<br>cuerda</th><th>Cadena</th></tr></thead><tbody id="pointsTable"></tbody></table></div></article></div>
+      <div class="info-strip"><b>Cómo leerlo</b><span><strong>O–Pi</strong> es el radio desde el centro. <strong>PC–Pi arco</strong> es la distancia sobre la curva; la cuerda directa se muestra como referencia adicional.</span></div>
+    </section>
+    <section class="panel" id="panel-resultados">
+      <div class="section-heading"><div><p class="eyebrow">RESUMEN COMO EN LA HOJA DE CÁLCULO</p><h2>Parámetros y elementos de proyecto</h2><p class="subheading">Valores normativos sugeridos, curva adoptada, transiciones, elementos y cadenamientos.</p></div><span class="step">C</span></div>
+      <div id="detailedOutputs" class="output-sections"></div>
+    </section>
+    <section class="panel" id="panel-tablas">
+      <div class="section-heading"><div><p class="eyebrow">DATOS NORMATIVOS INTEGRADOS</p><h2>Tablas SCT</h2><p class="subheading">Al cambiar el tipo de carretera, velocidad y grado, se buscan los límites y sugerencias aplicables.</p></div><span class="step">D</span></div>
+      <div class="table-cards" id="normTables"></div>
+    </section>
+    <section class="panel" id="panel-memoria">
+      <div class="section-heading"><div><p class="eyebrow">DOCUMENTACIÓN DEL PROYECTO</p><h2>Memoria de cálculo</h2><p class="subheading">Parámetros, desarrollo, resultados y verificaciones de la geometría actual.</p></div><span class="step">E</span></div>
+      <div class="memory-layout"><article id="memoryPreview" class="memory-preview"></article><aside class="memory-actions"><div class="download-card"><span class="file-icon pdf-icon">PDF</span><h3>Memoria en PDF</h3><p>Documento con resultados y tabla de puntos listo para imprimir o guardar.</p><button class="button button-primary full" id="pdfBtn">Descargar PDF ↓</button></div><div class="download-card"><span class="file-icon md-icon">MD</span><h3>Memoria Markdown</h3><p>Archivo editable para integrar en la documentación del proyecto.</p><button class="button button-secondary full" id="mdBtn">Descargar .md ↓</button></div><div class="memory-disclaimer">La memoria se genera con los valores visibles en el diseño. Documenta las hipótesis antes de incorporar el cálculo a un proyecto ejecutivo.</div></aside></div>
+    </section>
+    <footer><span>CURVA<span class="brand-dot">.</span> <small>Herramienta de apoyo para diseño geométrico</small></span><span>Fuentes de referencia: SCT 1984 · Manual de Proyecto Geométrico 2018</span></footer>
+  </main>
+  <script src="norm-data.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>
